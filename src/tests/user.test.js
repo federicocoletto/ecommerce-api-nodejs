@@ -21,9 +21,9 @@ beforeAll(async () => {
 
 test("GET --> '/api/v1/users' should return statusCode 200 and res.body.length === 1", async () => {
 	const res = await request(app)
-	.get(users_URL)
-	.set("Authorization", `Bearer ${TOKEN}`);
-	
+		.get(users_URL)
+		.set("Authorization", `Bearer ${TOKEN}`);
+
 	expect(res.status).toBe(200);
 	expect(res.body).toBeDefined();
 	expect(res.body).toHaveLength(1);
@@ -37,14 +37,11 @@ test("POST --> '/api/v1/users' should return statusCode 201 and res.body.firstNa
 		password: "1234",
 		phone: "2612539374",
 	};
-	
-	
-	const res = await request(app)
-	.post(users_URL)
-	.send(user);
-	
-	userId = res.body.id
-	
+
+	const res = await request(app).post(users_URL).send(user);
+
+	userId = res.body.id;
+
 	expect(res.status).toBe(201);
 	expect(res.body).toBeDefined();
 	expect(res.body.firstName).toBe(user.firstName);
@@ -54,13 +51,47 @@ test("PUT --> '/api/v1/users/:id' should return statusCode 200 and res.body.firs
 	const user = {
 		firstName: "Federico",
 	};
-	
+
 	const res = await request(app)
 		.put(`${users_URL}/${userId}`)
 		.send(user)
-		.set("Authorization", `Bearer ${TOKEN}`)
+		.set("Authorization", `Bearer ${TOKEN}`);
 
 	expect(res.status).toBe(200);
 	expect(res.body).toBeDefined();
 	expect(res.body.firstName).toBe(user.firstName);
+});
+
+test("POST --> '/api/v1/users/login' should return statusCode 200 and res.body.email === user.email and res.body.token to be defined", async () => {
+	// el del test(POST)
+	const user = {
+		email: "fedecolettok@gmail.com",
+		password: "1234",
+	};
+
+	const res = await request(app).post(`${users_URL}/login`).send(user);
+
+	expect(res.status).toBe(200);
+	expect(res.body).toBeDefined();
+	expect(res.body.user.email).toBe(user.email);
+	expect(res.body.token).toBeDefined();
+});
+
+test("POST --> '/api/v1/users/login' should return statusCode 401", async () => {
+	const user = {
+		email: "fedecolettok@gmail.com",
+		password: "invalid password",
+	};
+
+	const res = await request(app).post(`${users_URL}/login`).send(user);
+
+	expect(res.status).toBe(401);
+});
+
+test("DELETE --> '/api/v1/users/:id' should return statusCode 204", async () => {
+	const res = await request(app)
+		.delete(`${users_URL}/${userId}`)
+		.set("Authorization", `Bearer ${TOKEN}`);
+
+	expect(res.status).toBe(204);
 });
