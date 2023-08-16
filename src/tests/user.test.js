@@ -49,7 +49,7 @@ test("POST --> '/api/v1/users' should return statusCode 201 and res.body.firstNa
 	expect(res.body.firstName).toBe(user.firstName);
 });
 
-test("PUT --> '/api/v1/users/:id' should return statusCode 200 and res.body.length === 1", async () => {
+test("PUT --> '/api/v1/users/:id' should return statusCode 200 and res.body.firstName === userCreate.firstName", async () => {
 	const userUpdate = {
 		firstName: "Federico",
 	};
@@ -63,5 +63,5 @@ test("PUT --> '/api/v1/users/:id' should return statusCode 200 and res.body.leng
 
 	expect(res.status).toBe(200);
 	expect(res.body).toBeDefined();
-	// expect(res.body).toHaveLength(1);
+	expect(res.body.firstName).toBe(userUpdate.firstName);
 });
