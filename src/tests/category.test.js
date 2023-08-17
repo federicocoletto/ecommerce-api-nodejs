@@ -19,7 +19,7 @@ beforeAll(async () => {
 
 test("POST --> '/api/v1/categories' should return statusCode 201 and res.body.name === body.name", async () => {
 	const category = {
-		name: "Hogar",
+		name: "Smart TV",
 	};
 
 	const res = await request(app)
