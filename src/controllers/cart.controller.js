@@ -1,10 +1,27 @@
 const catchError = require("../utils/catchError");
 const Cart = require("../models/Cart");
+const Product = require("../models/Product");
+const Category = require("../models/Category");
+const User = require("../models/User");
 
 const getAll = catchError(async (req, res) => {
 	// traer los productos en el carrito del usuario loggeado
 	const userId = req.user.id;
-	const results = await Cart.findAll({ where: { userId } });
+	const results = await Cart.findAll({
+		where: { userId },
+		include: [
+			{
+				model: Product,
+				attributes: { exclude: ["createdAt", "updatedAt"] },
+				include: [
+					{
+						model: Category,
+						attributes: ["name"],
+					},
+				],
+			},
+		],
+	});
 	return res.json(results);
 });
 
