@@ -9,8 +9,8 @@ const getAll = catchError(async (req, res) => {
 });
 
 const create = catchError(async (req, res) => {
-	// ?
 	const userId = req.user.id;
+	//  agregar los productos y cantidad deseados por el usuario loggeado en el carrito
 	const { quantity, productId } = req.body;
 	const body = {
 		quantity,
@@ -23,7 +23,7 @@ const create = catchError(async (req, res) => {
 
 const remove = catchError(async (req, res) => {
 	const { id } = req.params;
-	//
+	// eliminar los productos deseados por el usuario loggeado en el carrito
 	const result = await Cart.destroy({ where: { id, userId: req.user.id } });
 	if (!result) return res.sendStatus(404);
 	return res.sendStatus(204);
@@ -31,6 +31,7 @@ const remove = catchError(async (req, res) => {
 
 const update = catchError(async (req, res) => {
 	const { id } = req.params;
+	// actualizar la cantidad
 	const { quantity } = req.body;
 	const result = await Cart.update(
 		{ quantity },
