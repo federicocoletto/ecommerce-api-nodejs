@@ -4,7 +4,7 @@ const Product = require("../models/Product");
 require("../models");
 
 const users_URL = "/api/v1/users";
-const category_URL = "/api/v1/cart";
+const cart_URL = "/api/v1/cart";
 
 let TOKEN;
 let productBody;
@@ -19,26 +19,28 @@ beforeAll(async () => {
 	};
 	const res = await request(app).post(`${users_URL}/login`).send(user);
 
+	console.log(res.body);
 	TOKEN = res.body.token;
 	userId = res.body.user.id;
 
 	productBody = {
-		title: "productTest",
-		description: "lorem20",
-		price: 23,
+		title: "Samsung HD 55",
+		description:
+			"Samsung TVs are a popular line of television sets produced by the South Korean electronics company, Samsung. Known for their advanced technology, sleek design, and diverse range of models, Samsung TVs offer a variety of features to enhance the viewing experience.",
+		price: 999.99,
 	};
 
 	product = await Product.create(productBody);
 });
 
-test("POST -> 'category_URL', should return status code 201 and res.body.quantity === bodyCart.quantity", async () => {
+test("POST -> 'cart_URL', should return status code 201 and res.body.quantity === bodyCart.quantity", async () => {
 	const bodyCart = {
 		quantity: 1,
 		productId: product.id,
 	};
 
 	const res = await request(app)
-		.post(category_URL)
+		.post(cart_URL)
 		.send(bodyCart)
 		.set("Authorization", `Bearer ${TOKEN}`);
 
@@ -50,9 +52,9 @@ test("POST -> 'category_URL', should return status code 201 and res.body.quantit
 	expect(res.body.id).toBe(userId);
 });
 
-test("GET -> 'category_URL',should return status code 200 and res.body.length === 1", async () => {
+test("GET -> 'cart_URL',should return status code 200 and res.body.length === 1", async () => {
 	const res = await request(app)
-		.get(category_URL)
+		.get(cart_URL)
 		.set("Authorization", `Bearer ${TOKEN}`);
 
 	expect(res.status).toBe(200);
@@ -64,24 +66,24 @@ test("GET -> 'category_URL',should return status code 200 and res.body.length ==
 	expect(res.body[0].product.id).toBe(product.id);
 });
 
-test("PUT -> 'category_URL/:id',should return status code 200 and res.body.quantity === bodyUpdate.quantity", async () => {
-	const bodyUpdate = {
+test("PUT -> 'cart_URL/:id',should return status code 200 and res.body.quantity === bodyUpdate.quantity", async () => {
+	const cartUpdate = {
 		quantity: 2,
 	};
 
 	const res = await request(app)
-		.put(`${category_URL}/${cartId}`)
-		.send(bodyUpdate)
+		.put(`${cart_URL}/${cartId}`)
+		.send(cartUpdate)
 		.set("Authorization", `Bearer ${TOKEN}`);
 
 	expect(res.status).toBe(200);
 	expect(res.body).toBeDefined();
-	expect(res.body.quantity).toBe(bodyUpdate.quantity);
+	expect(res.body.quantity).toBe(cartUpdate.quantity);
 });
 
-test("DELETE -> 'category_URL/:id',should return status code 204", async () => {
+test("DELETE -> 'cart_URL/:id',should return status code 204", async () => {
 	const res = await request(app)
-		.delete(`${category_URL}/${cartId}`)
+		.delete(`${cart_URL}/${cartId}`)
 		.set("Authorization", `Bearer ${TOKEN}`);
 
 	expect(res.status).toBe(204);

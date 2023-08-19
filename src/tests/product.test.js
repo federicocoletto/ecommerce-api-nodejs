@@ -3,8 +3,8 @@ const app = require("../app");
 const Category = require("../models/Category");
 require("../models");
 
-const products_URL = "/api/v1/products";
-const users_URL = "/api/v1/users";
+const URL_BASE = "/api/v1/products";
+const URL_BASE_USER = "/api/v1/users/login";
 let TOKEN;
 let product;
 let category;
@@ -15,29 +15,28 @@ beforeAll(async () => {
 		email: "federico.coletto@fce.uncu.edu.ar",
 		password: "1234",
 	};
-
-	const res = await request(app).post(`${users_URL}/login`).send(user);
+	const res = await request(app).post(URL_BASE_USER).send(user);
 
 	TOKEN = res.body.token;
 
 	const categoryBody = {
-		name: "Smart TV",
+		name: "Smarts",
 	};
 
 	category = await Category.create(categoryBody);
 
 	product = {
-		title: "Samsung HD 55",
+		title: "LG Oled",
 		description:
 			"Samsung TVs are a popular line of television sets produced by the South Korean electronics company, Samsung. Known for their advanced technology, sleek design, and diverse range of models, Samsung TVs offer a variety of features to enhance the viewing experience.",
-		price: 999.99,
+		price: 1999.99,
 		categoryId: category.id,
 	};
 });
 
-test("POST --> '/api/v1/products' should return statusCode 201 and res.body.name === body.name", async () => {
+test("POST -> 'URL_BASE', should resturn status code 201 and res.body.title = product.title", async () => {
 	const res = await request(app)
-		.post(products_URL)
+		.post(URL_BASE)
 		.send(product)
 		.set("Authorization", `Bearer ${TOKEN}`);
 
@@ -46,12 +45,10 @@ test("POST --> '/api/v1/products' should return statusCode 201 and res.body.name
 	expect(res.status).toBe(201);
 	expect(res.body).toBeDefined();
 	expect(res.body.title).toBe(product.title);
-
-	// await category.destroy();
 });
 
-test("GET --> '/api/v1/products' should return statusCode 200 and res.body.length === 1", async () => {
-	const res = await request(app).get(products_URL);
+test("GET -> 'URL_BASE', should resturn status code 200 and res.body.legnth = 1", async () => {
+	const res = await request(app).get(URL_BASE);
 
 	expect(res.status).toBe(200);
 	expect(res.body).toBeDefined();
@@ -60,12 +57,10 @@ test("GET --> '/api/v1/products' should return statusCode 200 and res.body.lengt
 	expect(res.body[0].category.id).toBe(category.id);
 });
 
+test("GET -> 'URL_BASE?category=id', should resturn status code 200 and res.body.legnth = 1, res.body[0].category to be defined and res.body[0].category = category.id", async () => {
+	const res = await request(app) // /api/v1/products?category=1
+		.get(`${URL_BASE}?category=${category.id}`);
 
-test("GET FILTER --> '/api/v1/products?category=id' should return statusCode 200 and res.body.length === 1 and res.body[0].category === category.id", async () => {
-	const res = await request(app).get(`${products_URL}?catgory=${category.id}`);
-	
-	console.log(res.body[0]);
-	
 	expect(res.status).toBe(200);
 	expect(res.body).toBeDefined();
 	expect(res.body).toHaveLength(1);
@@ -73,24 +68,21 @@ test("GET FILTER --> '/api/v1/products?category=id' should return statusCode 200
 	expect(res.body[0].category.id).toBe(category.id);
 });
 
-test("GET ONE --> '/api/v1/products/:id' should return statusCode 200 and res.body.length === 1", async () => {
-	const res = await request(app)
-		.get(`${products_URL}/${productId}`)
-		.set("Authorization", `Bearer ${TOKEN}`);
+test("GET ONE -> 'URL_BASE/:id', should resturn status code 200 and res.body.title = product.title", async () => {
+	const res = await request(app).get(`${URL_BASE}/${productId}`);
 
 	expect(res.status).toBe(200);
 	expect(res.body).toBeDefined();
 	expect(res.body.title).toBe(product.title);
 });
 
-test("PUT --> '/api/v1/products/:id' should return statusCode 200 and res.body.firstName === userCreate.firstName", async () => {
-
+test("PUT -> 'URL_BASE/:id', should resturn status code 200 and res.body.title = productUpdate.title", async () => {
 	const productUpdate = {
-		title: "Samsung HD 60",
+		title: "Samsung oled 55",
 	};
 
 	const res = await request(app)
-		.put(`${products_URL}/${productId}`)
+		.put(`${URL_BASE}/${productId}`)
 		.send(productUpdate)
 		.set("Authorization", `Bearer ${TOKEN}`);
 
@@ -99,10 +91,12 @@ test("PUT --> '/api/v1/products/:id' should return statusCode 200 and res.body.f
 	expect(res.body.title).toBe(productUpdate.title);
 });
 
-test("DELETE --> '/api/v1/products/:id' should return statusCode 204", async () => {
+test("DELET -> 'URL_BASE/:id', should resturn status code 204", async () => {
 	const res = await request(app)
-		.delete(`${products_URL}/${productId}`)
+		.delete(`${URL_BASE}/${productId}`)
 		.set("Authorization", `Bearer ${TOKEN}`);
 
 	expect(res.status).toBe(204);
+
+	await category.destroy();
 });

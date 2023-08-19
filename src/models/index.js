@@ -16,10 +16,10 @@ User.hasMany(Cart);
 Cart.belongsTo(Product);
 Product.hasMany(Cart);
 
-// Cart --> userId (fk)
+// Purchase --> userId (fk)
 Purchase.belongsTo(User);
 User.hasMany(Purchase);
 
-// Cart --> userId (fk)
+// Purchase --> ProductId (fk)
 Purchase.belongsTo(Product);
 Product.hasMany(Purchase);
