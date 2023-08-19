@@ -47,7 +47,7 @@ test("POST --> '/api/v1/products' should return statusCode 201 and res.body.name
 	expect(res.body).toBeDefined();
 	expect(res.body.title).toBe(product.title);
 
-	await category.destroy();
+	// await category.destroy();
 });
 
 test("GET --> '/api/v1/products' should return statusCode 200 and res.body.length === 1", async () => {
@@ -56,6 +56,21 @@ test("GET --> '/api/v1/products' should return statusCode 200 and res.body.lengt
 	expect(res.status).toBe(200);
 	expect(res.body).toBeDefined();
 	expect(res.body).toHaveLength(1);
+	expect(res.body[0].category).toBeDefined();
+	expect(res.body[0].category.id).toBe(category.id);
+});
+
+
+test("GET FILTER --> '/api/v1/products?category=id' should return statusCode 200 and res.body.length === 1 and res.body[0].category === category.id", async () => {
+	const res = await request(app).get(`${products_URL}?catgory=${category.id}`);
+	
+	console.log(res.body[0]);
+	
+	expect(res.status).toBe(200);
+	expect(res.body).toBeDefined();
+	expect(res.body).toHaveLength(1);
+	expect(res.body[0].category).toBeDefined();
+	expect(res.body[0].category.id).toBe(category.id);
 });
 
 test("GET ONE --> '/api/v1/products/:id' should return statusCode 200 and res.body.length === 1", async () => {
@@ -63,7 +78,6 @@ test("GET ONE --> '/api/v1/products/:id' should return statusCode 200 and res.bo
 		.get(`${products_URL}/${productId}`)
 		.set("Authorization", `Bearer ${TOKEN}`);
 
-		console.log(res.body);
 	expect(res.status).toBe(200);
 	expect(res.body).toBeDefined();
 	expect(res.body.title).toBe(product.title);
