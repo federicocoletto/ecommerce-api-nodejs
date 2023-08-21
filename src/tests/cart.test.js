@@ -19,7 +19,6 @@ beforeAll(async () => {
 	};
 	const res = await request(app).post(`${users_URL}/login`).send(user);
 
-	console.log(res.body);
 	TOKEN = res.body.token;
 	userId = res.body.user.id;
 

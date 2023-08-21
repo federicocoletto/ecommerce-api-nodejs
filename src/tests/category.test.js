@@ -1,16 +1,11 @@
 const request = require("supertest");
 const app = require("../app");
-const Product = require("../models/Product");
-require("../models");
 
 const users_URL = "/api/v1/users";
-const category_URL = "/api/v1/cart";
+const categories_URL = "/api/v1/categories";
 
 let TOKEN;
-let productBody;
-let product;
-let userId;
-let cartId;
+let categoryId;
 
 beforeAll(async () => {
 	const user = {
@@ -20,70 +15,39 @@ beforeAll(async () => {
 	const res = await request(app).post(`${users_URL}/login`).send(user);
 
 	TOKEN = res.body.token;
-	userId = res.body.user.id;
-
-	productBody = {
-		title: "productTest",
-		description: "lorem20",
-		price: 23,
-	};
-
-	product = await Product.create(productBody);
 });
 
-test("POST -> 'category_URL', should return status code 201 and res.body.quantity === bodyCart.quantity", async () => {
-	const bodyCart = {
-		quantity: 1,
-		productId: product.id,
+test("POST -> 'categories_URL', should return status code 201 and res.body.name === category.name", async () => {
+	const category = {
+		name: "Living Room Furniture",
 	};
 
 	const res = await request(app)
-		.post(category_URL)
-		.send(bodyCart)
+		.post(categories_URL)
+		.send(category)
 		.set("Authorization", `Bearer ${TOKEN}`);
 
-	cartId = res.body.id;
+	categoryId = res.body.id;
 
 	expect(res.status).toBe(201);
 	expect(res.body).toBeDefined();
-	expect(res.body.quantity).toBe(bodyCart.quantity);
-	expect(res.body.id).toBe(userId);
+	expect(res.body.name).toBe(category.name);
 });
 
-test("GET -> 'category_URL',should return status code 200 and res.body.length === 1", async () => {
+test("GET -> 'categories_URL',should return status code 200 and res.body.length === 1", async () => {
 	const res = await request(app)
-		.get(category_URL)
+		.get(categories_URL)
 		.set("Authorization", `Bearer ${TOKEN}`);
 
 	expect(res.status).toBe(200);
 	expect(res.body).toBeDefined();
 	expect(res.body).toHaveLength(1);
-	expect(res.body[0].userId).toBe(userId);
-	expect(res.body[0].product).toBeDefined();
-	expect(res.body[0].productId).toBe(product.id);
-	expect(res.body[0].product.id).toBe(product.id);
 });
 
-test("PUT -> 'category_URL/:id',should return status code 200 and res.body.quantity === bodyUpdate.quantity", async () => {
-	const bodyUpdate = {
-		quantity: 2,
-	};
-
+test("DELETE -> 'categories_URL/:id',should return status code 204", async () => {
 	const res = await request(app)
-		.put(`${category_URL}/${cartId}`)
-		.send(bodyUpdate)
-		.set("Authorization", `Bearer ${TOKEN}`);
-
-	expect(res.status).toBe(200);
-	expect(res.body).toBeDefined();
-	expect(res.body.quantity).toBe(bodyUpdate.quantity);
-});
-
-test("DELETE -> 'category_URL/:id',should return status code 204", async () => {
-	const res = await request(app)
-		.delete(`${category_URL}/${cartId}`)
+		.delete(`${categories_URL}/${categoryId}`)
 		.set("Authorization", `Bearer ${TOKEN}`);
 
 	expect(res.status).toBe(204);
-	await product.destroy();
 });
