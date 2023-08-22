@@ -26,10 +26,10 @@ beforeAll(async () => {
 	category = await Category.create(categoryBody);
 
 	product = {
-		title: "LG Oled",
+		title: "Industrial Style Reclaimed Oak Coffee Table",
 		description:
-			"Samsung TVs are a popular line of television sets produced by the South Korean electronics company, Samsung. Known for their advanced technology, sleek design, and diverse range of models, Samsung TVs offer a variety of features to enhance the viewing experience.",
-		price: 1999.99,
+			"The industrial coffee table combines reclaimed oak wood and sturdy metal for a unique and durable look.",
+		price: 249.0,
 		categoryId: category.id,
 	};
 });
