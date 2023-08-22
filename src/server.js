@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 8080;
 const main = async () => {
     try {
         sequelize.sync(
-            // {force: true}
+            {force: true}
             // {alter: true}
         );
         console.log("DB connected");
