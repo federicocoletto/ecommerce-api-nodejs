@@ -20,8 +20,8 @@ const remove = catchError(async (req, res) => {
 	const result = await ProductImg.findByPk(id)
 	if(!result) return res.sendStatus(404)
 	fs.unlinkSync(path.join(__dirname, '..', 'public', 'uploads', `${result.filename}`))
-	await result.destroy()
-	return res.sendStatus(204);
+await result.destroy()
+return res.sendStatus(204);
 });
 
 module.exports = {
