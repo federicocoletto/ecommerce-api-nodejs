@@ -63,6 +63,8 @@ test("GET -> 'cart_URL',should return status code 200 and res.body.length === 1"
 	expect(res.body[0].product).toBeDefined();
 	expect(res.body[0].productId).toBe(product.id);
 	expect(res.body[0].product.id).toBe(product.id);
+	expect(res.body[0].product.productImgs).toBeDefined();
+	expect(res.body[0].product.productImgs).toHaveLength(0);
 });
 
 test("PUT -> 'cart_URL/:id',should return status code 200 and res.body.quantity === bodyUpdate.quantity", async () => {
